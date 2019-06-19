@@ -9,6 +9,17 @@ sudo systemctl disable apt-daily-upgrade.timer
 
 sudo killall apt apt-get || echo "No apt-get process running"
 
+if [ "$machinetype" = "backendMQ" ]
+then 
+
+cat << EOF
+
+"#####################################################"
+"In Backend provisioning Starting to install rabbitmq"
+"#####################################################"
+
+EOF
+
 sudo apt-key adv --keyserver "hkps.pool.sks-keyservers.net" --recv-keys 
 wget -O - "https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc" | sudo apt-key add -
 sudo apt-get install apt-transport-https
@@ -50,18 +61,89 @@ sudo apt-get install rabbitmq-server -y --fix-missing
 
 sudo rabbitmqctl status
 
+	else
+		echo "Skipping install of RabbitMQ as this is frontend machine"
+fi 
+
 python3 -V
 
+cat << EOF
+
+"##########################################"
+"Installing PIP "
+"##########################################"
+
+EOF
+
 sudo apt-get install python-pip -y
+
+cat << EOF
+
+"##########################################"
+"Installing nameko "
+"##########################################"
+
+EOF
 
 pip install nameko
 
 cd /vagrant
 
+
+if [ "$machinetype" = "backendMQ" ]
+then 
+
+cat << EOF
+
+"##########################################"
+"In backned: Starting BackEnd File service "
+"##########################################"
+
+EOF
+set -x
 cp /vagrant/rabbitmq.conf /etc/rabbitmq/rabbitmq.conf
 
+cd /vagrant
+
+rm -rf backendoutput.log || echo "No need to cleanup backendoutput"
 sudo service rabbitmq-server restart
+rabbitmqctl status
 
-nameko run --config config.yml BackEnd & 
+nameko run --config config.yml BackEnd > backendoutput.log 2>&1 &
 
-python FrontEnd.py  
+echo "####### Done Starting BackEnd File service"
+else
+echo "Skipping starting of backend code - Starting of RabbitMQ and BackEnd microservice"	
+fi
+
+
+
+if [ "$machinetype" = "frontend" ]
+then 
+cat << EOF
+
+"##########################################"
+"In Frontend: Starting FrontEnd HTTP Server "
+"##########################################"
+
+EOF
+
+echo "I am in "
+pwd 
+set -x
+
+cd /vagrant
+ps -ef | grep nameko
+rm -rf frontendoutput.log || echo "No need to cleanup frontendoutput"
+
+echo "Running command : nameko run --config config.yml FrontEnd > frontendoutput.log 2>&1"
+
+nameko run --config config.yml FrontEnd > frontendoutput.log 2>&1 &
+sleep 5
+ps -ef | grep nameko
+
+echo "####### Done Starting FrontEnd HTTP/File service"
+else
+echo "Skipping starting of frontend code"	
+
+fi 
