@@ -22,7 +22,3 @@ class HttpService:
 			 return 404, "File "+ value + " NOT_FOUND"
 			else:
 			 return rest
-
-# with ClusterRpcProxy(config) as cluster_rpc:
-#     rest = cluster_rpc.backEnd_service.getFile("testfile.text")
-#     print("File Content of file testfile.text: \n####################################################\n"+ rest + "\n####################################################")
