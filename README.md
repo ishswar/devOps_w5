@@ -1,6 +1,13 @@
 # devOps_w5
 Microservices and Vagrant
 
+### Over all archetecutre 
+
+![alt text](Vagrant-DevOps.png)
+
+### Provisioner script 
+
+
 ``` SHELL
 
   ~ ➜  ~ curl -i localhost:8090/get/a.txt
