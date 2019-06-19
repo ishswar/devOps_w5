@@ -160,6 +160,8 @@ fi
 
 ```
 
+### Output showing HTTP GET (via cURL) of various files and non-existent file 
+
 ``` SHELL
 
   ~ ➜  ~ curl -i localhost:8090/get/a.txt
