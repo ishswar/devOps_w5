@@ -1,3 +1,5 @@
+# FrontEnd.py
+
 from nameko.standalone.rpc import ClusterRpcProxy
 from nameko.web.handlers import http
 
@@ -15,7 +17,7 @@ class HttpService:
 		print("Input is "+ value)
 		with ClusterRpcProxy(config) as cluster_rpc:
 			rest = cluster_rpc.backEnd_service.getFileContents(value)
-			print("File Content of file testfile1.text: \n@@@@@@@@@@@@@@@@@##############################\n"+ rest + "\n####################################################")
+			print("File Content of file testfile1.text: \n###############################################\n"+ rest + "\n####################################################")
 			if rest.startswith( '~' ):
 			 return 404, "File "+ value + " NOT_FOUND"
 			else:
