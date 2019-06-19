@@ -159,6 +159,64 @@ echo "Skipping starting of frontend code"
 fi 
 
 ```
+### Back-end Python microservice (using nameko) - on request it will read file that was part of input 
+
+``` PYTHON
+
+# BackEnd.py
+
+from nameko.rpc import rpc
+import sys
+import os
+
+class BackEndService:
+	name = "backEnd_service"
+
+	@rpc
+	def getFileContents(self, name):
+			print(sys.version) 
+			try:
+				file = open(os.path.join("files",name), "r")
+				filetext = file.read()
+			except:
+				 filetext = "~Error-File: "+name+" NotFound"
+			
+			return filetext
+
+
+```
+
+### Front-end Python microservice (using nameko) - Starts HTTP Server and based on request parameter it will ask backed service to get file
+
+``` PYTHON
+
+# FrontEnd.py
+
+from nameko.standalone.rpc import ClusterRpcProxy
+from nameko.web.handlers import http
+
+config = {
+    'AMQP_URI': "amqp://guest:guest@192.168.33.76:7600//"  # e.g. "pyamqp://guest:guest@localhost"
+}
+
+#n.rpc.greeting_service.hello
+
+class HttpService:
+	name = "http_service"
+
+	@http('GET', '/get/<string:value>')
+	def get_method(self, request, value):
+		print("Input is "+ value)
+		with ClusterRpcProxy(config) as cluster_rpc:
+			rest = cluster_rpc.backEnd_service.getFileContents(value)
+			print("File Content of file testfile1.text: \n###############################################\n"+ rest + "\n####################################################")
+			if rest.startswith( '~' ):
+			 return 404, "File "+ value + " NOT_FOUND"
+			else:
+			 return rest
+
+
+```
 
 ### Output showing HTTP GET (via cURL) of various files and non-existent file 
 
