@@ -3,7 +3,7 @@ Microservices and Vagrant
 
 ## Overview 
 
-A little bit about backend: (In this VM) Backend is comprised of Rabbit MQ and Nameko microservice. This microservice implements one RPC method that reads a file ( filename is passed as input to the method ) and sends back the content of the file as return data for this RPC call. Python microservice connects to Rabbit MQ over port 7600.
+A little bit about backend: (In this VM) Backend is comprised of [Rabbit MQ](https://www.rabbitmq.com/install-debian.html) and [Nameko](https://nameko.readthedocs.io/en/stable/index.html) microservice. This microservice implements one RPC method that reads a file ( filename is passed as input to the method ) and sends back the content of the file as return data for this RPC call. Python microservice connects to Rabbit MQ over port 7600.
 
 Backend VM also has a bunch of file in /vagrant/files folder named a.txt, b.txt, c.txt, and d.txt. 
 
