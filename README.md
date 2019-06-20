@@ -1,6 +1,16 @@
 # devOps_w5
 Microservices and Vagrant
 
+## Overview 
+
+A little bit about backend: (In this VM) Backend is comprised of Rabbit MQ and Nameko microservice. This microservice implements one RPC method that reads a file ( filename is passed as input to the method ) and sends back the content of the file as return data for this RPC call. Python microservice connects to Rabbit MQ over port 7600.
+
+Backend VM also has a bunch of file in /vagrant/files folder named a.txt, b.txt, c.txt, and d.txt. 
+
+About frontend:(In this VM) There is also a microserver running that implemented using nameko as well. It starts a simple HTTP Server. If it gets a GET call then it expects file name to be passed as input parameter ( part of URI ) - once it gets a file name it makes an RPC call to backend service (RPC call over port 7600) and asks it to get content of the file. The backend will send data back if it finds a file matching with input if not it will send back an error. The HTTP server will send that data back to the requester.   
+
+We test Frontend using cURL tool - see below for sample output.
+
 ### Over all archetecutre 
 
 ![alt text](Vagrant-DevOps.png)
