@@ -20,6 +20,8 @@ cat << EOF
 
 EOF
 
+#These steps are from : https://www.rabbitmq.com/install-debian.html
+
 sudo apt-key adv --keyserver "hkps.pool.sks-keyservers.net" --recv-keys 
 wget -O - "https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc" | sudo apt-key add -
 sudo apt-get install apt-transport-https
@@ -101,14 +103,20 @@ cat << EOF
 
 EOF
 set -x
+
+# Copy config that runs Rabbit MQ on 7600 port and allow guest user access
 cp /vagrant/rabbitmq.conf /etc/rabbitmq/rabbitmq.conf
 
 cd /vagrant
 
 rm -rf backendoutput.log || echo "No need to cleanup backendoutput"
+
+# Restart Rabbit MQ to take new config 
+
 sudo service rabbitmq-server restart
 rabbitmqctl status
 
+# Start Backend Micro service 
 nameko run --config config.yml BackEnd > backendoutput.log 2>&1 &
 
 echo "####### Done Starting BackEnd File service"
@@ -134,6 +142,8 @@ set -x
 
 cd /vagrant
 ps -ef | grep nameko
+
+# Start frontend service 
 rm -rf frontendoutput.log || echo "No need to cleanup frontendoutput"
 
 echo "Running command : nameko run --config config.yml FrontEnd > frontendoutput.log 2>&1"
